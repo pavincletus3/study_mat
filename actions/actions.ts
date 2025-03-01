@@ -2,6 +2,8 @@
 import { admindb } from "@/firebase-admin";
 import liveblocks from "@/lib/liveblocks";
 import { auth } from "@clerk/nextjs/server";
+import exp from "constants";
+import { console } from "inspector";
 
 export async function createNewDocument() {
   auth.protect();
@@ -42,21 +44,66 @@ export async function deleteDocument(roomId: string) {
       .where("roomId", "==", roomId)
       .get();
 
-      const batch = admindb.batch();
+    const batch = admindb.batch();
 
-      //delete room reference in user collection for every user in the room
-      query.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
+    //delete room reference in user collection for every user in the room
+    query.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
 
-      await batch.commit();
+    await batch.commit();
 
-      //delete room in liveblocks
-      await liveblocks.deleteRoom(roomId);
+    //delete room in liveblocks
+    await liveblocks.deleteRoom(roomId);
 
     return { success: true };
   } catch (error) {
     console.error("Error deleting document:", error);
+    return { success: false };
+  }
+}
+
+export async function inviteUserToDocument(roomId: string, email: string) {
+  auth.protect();
+
+  console.log("inviteUserToDocument", roomId, email);
+
+  try {
+    await admindb
+      .collection("users")
+      .doc(email)
+      .collection("rooms")
+      .doc(roomId)
+      .set({
+        userId: email,
+        role: "editor",
+        createdAt: new Date(),
+        roomId,
+      });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error inviting user to document:", error);
+    return { success: false };
+  }
+}
+
+export async function removeUserFromDocument(roomId: string, email: string) {
+  auth.protect();
+
+  console.log("removeUserFromDocument", roomId, email);
+
+  try {
+    await admindb
+      .collection("users")
+      .doc(email)
+      .collection("rooms")
+      .doc(roomId)
+      .delete();
+      
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing user from document:", error);
     return { success: false };
   }
 }
