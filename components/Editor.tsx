@@ -11,6 +11,8 @@ import { useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/shadcn/style.css";
 import stringToColor from "@/lib/stringToColor";
+import TranslateDocument from "./TranslateDocument";
+import ChatToDocument from "./ChatToDocument";
 
 type EditorProps = {
   doc: Y.Doc;
@@ -70,7 +72,9 @@ function Editor() {
     <div className="max-w-6x1 mx-auto">
       <div className="flex justify-end items-center gap-5 mb-10">
         {/* TranslateDocument AI */}
+        <TranslateDocument doc={doc}/>
         {/* ChatToDocument AI */}
+        <ChatToDocument doc={doc}/>
         {/* Dark Mode */}
         <Button className={style} onClick={() => setDarkMode(!darkMode)}>
           {darkMode ? <SunIcon /> : <MoonIcon />}

@@ -24,16 +24,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>
+        <body className="">
           <Header />
-          <div className="flex min-h-screen">
+          <div className="flex pt-16 min-h-screen bg-gray-50">
             {/* Sidebar */}
-            <Sidebar />
+              <Sidebar />
             <div className="flex-1 p-4 bg-gray-100 overflow-y-auto scrollbar-hidden">
               {children}
             </div>
           </div>
-          <Toaster position="top-center"/>
+          <Toaster position="top-center" />
         </body>
       </html>
     </ClerkProvider>
